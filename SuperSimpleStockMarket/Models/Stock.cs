@@ -7,7 +7,8 @@ public class Stock
     public Decimal LastDividend { get; set; }
     public Decimal? FixedDividend { get; set; } = null;
     public Decimal ParValue { get; set; }
-    public Decimal? DividendYield { get; set; } = null;
-    public Decimal? PERatio { get; set; } = null;
-    public Decimal? VolumeWeightedPrice { get; set; } = null;
+    public Decimal DividendYield { get; set; }
+    public Decimal PERatio { get; set; }
+    public Decimal VolumeWeightedPrice { get; set; }
+    public IDictionary<DateTime, Trade> Trades { get; set; } = new Dictionary<DateTime, Trade>();
 }
