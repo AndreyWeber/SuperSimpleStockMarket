@@ -6,6 +6,13 @@ namespace SuperSimpleStockMarket.Services;
 
 public class StockService : IStockService
 {
+    private readonly ILogger<StockService> _logger;
+
+    public StockService(ILogger<StockService> logger)
+    {
+        _logger = logger;
+    }
+
     public Decimal CalculateDividendYield(ref Stock stock, Decimal price)
     {
         Throw.IfNull(nameof(stock), stock);
@@ -47,9 +54,9 @@ public class StockService : IStockService
 
         if (stock.Trades == null)
         {
-            // TODO: Add logging
-            throw new InvalidOperationException(
-                "Stock Trades collection was not initialized. It is equall to null");
+            var errMsg = $"Stock '{stock.Symbol}' Trades collection is not initialized";
+            _logger.LogError(errMsg);
+            throw new InvalidOperationException(errMsg);
         }
 
         var tradeIntervalStart = DateTime.Now;
@@ -60,19 +67,21 @@ public class StockService : IStockService
             .ToList();
         try
         {
-            var result = GetVolumeWeightedStockPrice(tradesInTheInterval);
-            stock.VolumeWeightedPrice = result;
+            var volumeWeightedPrice = GetVolumeWeightedStockPrice(tradesInTheInterval);
 
-            return result;
+            stock.VolumeWeightedPrice = volumeWeightedPrice;
+
+            return volumeWeightedPrice;
         }
         catch (DivideByZeroException ex)
         {
-            // TODO: Add logging
+            _logger.LogError(ex, "Stock '{Symbol}': one of the trades has Quantity equal to zero",
+                stock.Symbol);
             throw;
         }
         catch (Exception ex)
         {
-            // TODO: Add logging
+            _logger.LogError(ex, "Unexpected error occurred");
             throw;
         }
     }
@@ -86,7 +95,8 @@ public class StockService : IStockService
 
         if (String.IsNullOrWhiteSpace(trade.Symbol))
         {
-            // TODO: Add logging
+            _logger.LogWarning("Trade wasn't added to Stock '{Symbol}'. Trade.Symbol is null or empty",
+                stock.Symbol);
             return false;
         }
 

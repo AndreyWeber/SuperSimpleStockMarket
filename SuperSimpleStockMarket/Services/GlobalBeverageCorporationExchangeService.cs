@@ -7,15 +7,23 @@ namespace SuperSimpleStockMarket.Services;
 
 public class GlobalBeverageCorporationExchangeService : IGlobalBeverageCorporationExchangeServiceService
 {
+    private readonly ILogger<GlobalBeverageCorporationExchangeService> _logger;
+
+    public GlobalBeverageCorporationExchangeService(
+        ILogger<GlobalBeverageCorporationExchangeService> logger)
+    {
+        _logger = logger;
+    }
+
     public Decimal CalculateAllShareIndex(GlobalBeverageCorporationExchange exchange)
     {
         Throw.IfNull(nameof(exchange), exchange);
 
         if (exchange.Stocks == null)
         {
-            // TODO: Add logging
-            throw new InvalidOperationException(
-                "Exchange Stocks colleaction was not initialized. It is eqaul to null");
+            const string errMsg = "Exchange Stocks collection is not initialized";
+            _logger.LogError(errMsg);
+            throw new InvalidOperationException(errMsg);
         }
 
         try
@@ -35,7 +43,7 @@ public class GlobalBeverageCorporationExchangeService : IGlobalBeverageCorporati
         }
         catch (Exception ex)
         {
-            // TODO: Add logging
+            _logger.LogError(ex, "Unexpected error occurred");
             throw;
         }
     }
@@ -47,7 +55,7 @@ public class GlobalBeverageCorporationExchangeService : IGlobalBeverageCorporati
 
         if (String.IsNullOrWhiteSpace(stock.Symbol))
         {
-            // TODO: Add logging
+            _logger.LogWarning("Stock wasn't added to Exchange stocks collection. Stock.Symbol is null or empty");
             return false;
         }
 
