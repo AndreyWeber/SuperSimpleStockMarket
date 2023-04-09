@@ -22,7 +22,7 @@ public class StockServiceTests
 
     [Theory]
     [MemberData(nameof(CalculateDividendYield_GetTestData))]
-    public void CalculateDividendYield_Should_Succeed(
+    public void CalculateDividendYield_ValidArgs_Should_Succeed(
         StockType stockType,
         Decimal? fixedDividend,
         Decimal price,
@@ -48,7 +48,7 @@ public class StockServiceTests
     }
 
     [Fact]
-    public void CalculateDividendYield_Throws_ArgumentNullException()
+    public void CalculateDividendYield_NullStock_Throws_ArgumentNullException()
     {
         // Arrange
         Stock stock = null!;
@@ -58,7 +58,9 @@ public class StockServiceTests
         var action = () => _stockService.CalculateDividendYield(ref stock!, price);
 
         // Assert
-        action.Should().Throw<ArgumentNullException>();
+        action.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("*Argument cannot be null*");
     }
 
     public static IEnumerable<object[]> CalculateDividendYield_GetTestData()
@@ -91,7 +93,7 @@ public class StockServiceTests
     [InlineData(50.0, 0.0, 0.0)]
     [InlineData(0.0, 0.2, 0.0)]
     [InlineData(50.0, 0.2, 250.0)]
-    public void CalculatePERatio_Should_Succeed(
+    public void CalculatePERatio_ValidArgs_Should_Succeed(
         Decimal price,
         Decimal dividendYield,
         Decimal expectedPERatio
@@ -113,25 +115,132 @@ public class StockServiceTests
     }
 
     [Fact]
-    public void CalculatePERatio_Throws_ArgumentNullException()
+    public void CalculatePERatio_NullStock_Throws_ArgumentNullException()
     {
         // Arrange
         Stock stock = null!;
-        var price = 50m;
+        var price = 50.0m;
 
         // Act
         var action = () => _stockService.CalculatePERatio(ref stock, price);
 
         // Assert
-        action.Should().Throw<ArgumentNullException>();
+        action.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("*Argument cannot be null*");
     }
 
     #endregion CalculatePERatio() tests
 
-    // Add more test cases to cover various scenarios for CalculateDividendYield
-    // and other methods in the StockService class.
+    #region TryAddTrade() tests
 
-    // CalculatePERatio
-    // CalculateVolumeWeightedStockPrice
-    // TryAddTrade
+    [Fact]
+    public void TryAddTrade_ValidTrade_Success()
+    {
+        // Arrange
+        var stock = new Stock
+        {
+            Symbol = "TEST",
+            Type = StockType.Common,
+            LastDividend = 10.0m
+        };
+        var trade = new Trade
+        {
+            Symbol = "TEST",
+            TimeStamp = DateTime.Now,
+            Quantity = 100,
+            Price = 50.0m,
+            Type = TradeType.Buy
+        };
+
+        // Act
+        var actualResult = _stockService.TryAddTrade(ref stock, trade);
+
+        // Assert
+        actualResult.Should().BeTrue();
+        stock.Trades.Should().NotBeEmpty();
+        stock.Trades.Should().ContainKey(trade.TimeStamp);
+        stock.Trades[trade.TimeStamp].Should().Be(trade);
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    public void TryAddTrade_InvalidTradeSymbol_Should_Failure(string tradeSymbol)
+    {
+        // Arrange
+        var stock = new Stock
+        {
+            Symbol = "TEST",
+            Type = StockType.Common,
+            LastDividend = 10.0m
+        };
+        var trade = new Trade
+        {
+            Symbol = tradeSymbol,
+            TimeStamp = DateTime.Now,
+            Quantity = 100,
+            Price = 50.0m,
+            Type = TradeType.Buy
+        };
+
+        // Act
+        var actualResult = _stockService.TryAddTrade(ref stock, trade);
+
+        // Assert
+        actualResult.Should().BeFalse();
+        stock.Trades.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void TryAddTrade_NullStock_Throws_ArgumentNullException()
+    {
+        // Arrange
+        Stock stock = null!;
+        var trade = new Trade
+        {
+            Symbol = "TEST",
+            TimeStamp = DateTime.Now,
+            Quantity = 100,
+            Price = 50.0m,
+            Type = TradeType.Buy
+        };
+
+        // Act
+        var action = () => _stockService.TryAddTrade(ref stock, trade);
+
+        // Action
+        action.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("*Argument cannot be null*");
+    }
+
+    [Fact]
+    public void TryAddTrade_NullTrade_Throws_ArgumentNullException()
+    {
+        // Arrange
+        var stock = new Stock
+        {
+            Symbol = "TEST",
+            Type = StockType.Common,
+            LastDividend = 10.0m
+        };
+        Trade trade = null!;
+
+        // Act
+        var action = () => _stockService.TryAddTrade(ref stock, trade);
+
+        // Assert
+        action.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("*Argument cannot be null*");
+    }
+
+    #endregion TryAddTrade() tests
+
+    #region CalculateVolumeWeightedStockPrice() tests
+
+
+
+    #endregion CalculateVolumeWeightedStockPrice() tests
 }

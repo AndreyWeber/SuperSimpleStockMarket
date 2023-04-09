@@ -10,9 +10,9 @@ public enum StockType
 }
 
 /// <summary>
-/// Buy/Sell indicator
+/// Trade type enum. Buy/Sell indicator
 /// </summary>
-public enum BuySellIndicator
+public enum TradeType
 {
     Buy,
     Sell

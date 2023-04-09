@@ -6,5 +6,5 @@ public class Trade
     public DateTime TimeStamp { get; set; }
     public Int32 Quantity { get; set; }
     public Decimal Price { get; set; }
-    public BuySellIndicator BuySellIndicator { get; set; }
+    public TradeType Type { get; set; }
 }
