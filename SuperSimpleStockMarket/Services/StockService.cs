@@ -132,5 +132,4 @@ public class StockService : IStockService
                 trades.Sum(t => t.Quantity)
             )
             : Decimal.Zero;
-
 }

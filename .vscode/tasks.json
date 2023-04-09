@@ -36,6 +36,19 @@
                 "${workspaceFolder}/SuperSimpleStockMarket.Console/SuperSimpleStockMarket.Console.csproj"
             ],
             "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "test",
+            "command": "dotnet",
+            "type": "process",
+            "isTestCommand": true,
+            "args": [
+                "test",
+                "${workspaceFolder}/SuperSimpleStockMarket.Tests/SuperSimpleStockMarket.Tests.csproj",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "problemMatcher": "$msCompile"
         }
     ]
 }
