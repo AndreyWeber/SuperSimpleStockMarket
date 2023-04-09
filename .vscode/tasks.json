@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/SuperSimpleStockMarket.Console/SuperSimpleStockMarket.Console.csproj",
+                "${workspaceFolder}/SuperSimpleStockMarket.sln",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -19,7 +19,7 @@
             "type": "process",
             "args": [
                 "publish",
-                "${workspaceFolder}/SuperSimpleStockMarket.Console/SuperSimpleStockMarket.Console.csproj",
+                "${workspaceFolder}/SuperSimpleStockMarket.sln",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -33,7 +33,7 @@
                 "watch",
                 "run",
                 "--project",
-                "${workspaceFolder}/SuperSimpleStockMarket.Console/SuperSimpleStockMarket.Console.csproj"
+                "${workspaceFolder}/SuperSimpleStockMarket.sln"
             ],
             "problemMatcher": "$msCompile"
         },

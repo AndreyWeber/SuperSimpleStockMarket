@@ -32,6 +32,11 @@ public class GlobalBeverageCorporationExchangeService : IGlobalBeverageCorporati
                 .Where(kvp => kvp.Value != null)
                 .Select(kvp => kvp.Value)
                 .ToList();
+            if (!stocks.Any())
+            {
+                exchange.AllShareIndex = Decimal.Zero;
+                return Decimal.Zero;
+            }
 
             var sumOfLogarithms = GetSumOfVolumeWeightedPriceLogarithms(stocks);
             var averageOfLogarithms = Decimal.Divide(sumOfLogarithms, stocks.Count);
@@ -41,10 +46,16 @@ public class GlobalBeverageCorporationExchangeService : IGlobalBeverageCorporati
 
             return allShareIndex;
         }
+        catch (InvalidOperationException ex)
+        {
+            _logger.LogError(ex, ex.Message);
+            throw;
+        }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Unexpected error occurred");
-            throw;
+            const string errMsg = "Unexpected error occurred";
+            _logger.LogError(ex, errMsg);
+            throw new Exception(errMsg, ex);
         }
     }
 
