@@ -240,7 +240,191 @@ public class StockServiceTests
 
     #region CalculateVolumeWeightedStockPrice() tests
 
+    [Fact]
+    public void CalculateVolumeWeightedStockPrice_NoTrades_ZeroResult()
+    {
+        // Arrange
+        var stock = new Stock
+        {
+            Symbol = "TEST",
+            Type = StockType.Common,
+            LastDividend = 10.0m,
+            Trades = new Dictionary<DateTime, Trade>()
+        };
+        const Decimal expectedVolumeWeightedStockPrice = Decimal.Zero;
 
+        // Act
+        var actualVolumeWeightedStockPrice = _stockService.CalculateVolumeWeightedStockPrice(ref stock);
+
+        // Assert
+        actualVolumeWeightedStockPrice.Should().Be(expectedVolumeWeightedStockPrice);
+        stock.VolumeWeightedPrice.Should().Be(expectedVolumeWeightedStockPrice);
+    }
+
+    [Theory]
+    [MemberData(nameof(GetTradesTestData))]
+    public void CalculateVolumeWeightedStockPrice_WithTrades_Should_Succeed(
+        Dictionary<DateTime, Trade> trades,
+        Decimal expectedVolumeWeightedStockPrice,
+        Decimal expectedPrecision
+    )
+    {
+        // Arrange
+        var stock = new Stock
+        {
+            Symbol = "TEST",
+            Type = StockType.Common,
+            LastDividend = 10.0m,
+            Trades = trades
+        };
+
+        // Act
+        var volumeWeightedStockPrice = _stockService.CalculateVolumeWeightedStockPrice(ref stock);
+
+        // Assert
+        volumeWeightedStockPrice.Should()
+            .BeApproximately(expectedVolumeWeightedStockPrice, expectedPrecision);
+        stock.VolumeWeightedPrice.Should()
+            .BeApproximately(expectedVolumeWeightedStockPrice, expectedPrecision);
+    }
+
+    [Fact]
+    public void CalculateVolumeWeightedStockPrice_NullStock_Throws_ArgumentNullException()
+    {
+        // Arrange
+        Stock stock = null!;
+
+        // Act
+        var action = () => _stockService.CalculateVolumeWeightedStockPrice(ref stock);
+
+        // Assert
+        action.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("*Argument cannot be null*");
+    }
+
+    [Fact]
+    public void CalculateVolumeWeightedStockPrice_ZeroQuantity_Throws_DivideByZeroException()
+    {
+        // Arrange
+        var stock = new Stock
+        {
+            Symbol = "TEST",
+            Type = StockType.Common,
+            LastDividend = 10m,
+            Trades = new Dictionary<DateTime, Trade>
+            {
+                {
+                    DateTime.Now,
+                    new Trade
+                    {
+                        Symbol = "TEST",
+                        TimeStamp = DateTime.Now,
+                        Quantity = 0,
+                        Price = 50.0m,
+                        Type = TradeType.Buy
+                    }
+                },
+            }
+        };
+
+        // Act
+        var action = () => _stockService.CalculateVolumeWeightedStockPrice(ref stock);
+
+        // Assert
+        action.Should()
+            .Throw<DivideByZeroException>()
+            .WithMessage("*has Quantity equal to zero*");
+    }
+
+    [Fact]
+    public void CalculateVolumeWeightedStockPrice_Overflow_Throws_Exception()
+    {
+        // Arrange
+        var stock = new Stock
+        {
+            Symbol = "TEST",
+            Type = StockType.Common,
+            LastDividend = 10.0m,
+            Trades = new Dictionary<DateTime, Trade>
+            {
+                {
+                    DateTime.Now,
+                    new Trade
+                    {
+                        Symbol = "TEST",
+                        TimeStamp = DateTime.Now,
+                        Quantity = 1,
+                        Price = Decimal.MaxValue,
+                        Type = TradeType.Buy
+                    }
+                },
+                {
+                    DateTime.Now.AddSeconds(-1),
+                    new Trade
+                    {
+                        Symbol = "TEST",
+                        TimeStamp = DateTime.Now.AddSeconds(-1),
+                        Quantity = 1,
+                        Price = Decimal.MaxValue,
+                        Type = TradeType.Buy
+                    }
+                },
+            }
+        };
+
+        // Act
+        var action = () => _stockService.CalculateVolumeWeightedStockPrice(ref stock);
+
+        // Assert
+        action.Should().Throw<Exception>().WithMessage("*Unexpected error occurred*");
+    }
+
+    public static IEnumerable<object[]> GetTradesTestData =>
+        new List<object[]>
+        {
+            new object[]
+            {
+                new Dictionary<DateTime, Trade>
+                {
+                    {
+                        DateTime.Now.AddSeconds(-10),
+                        new Trade
+                        {
+                            Symbol = "TEST",
+                            TimeStamp = DateTime.Now.AddSeconds(-10),
+                            Quantity = 100,
+                            Price = 50.0m,
+                            Type = TradeType.Buy
+                        }
+                    },
+                    {
+                        DateTime.Now.AddSeconds(-20),
+                        new Trade
+                        {
+                            Symbol = "TEST",
+                            TimeStamp = DateTime.Now.AddSeconds(-20),
+                            Quantity = 50,
+                            Price = 40.0m,
+                            Type = TradeType.Sell
+                        }
+                    },
+                    {
+                        DateTime.Now.AddSeconds(-30),
+                        new Trade
+                        {
+                            Symbol = "TEST",
+                            TimeStamp = DateTime.Now.AddSeconds(-30),
+                            Quantity = 150,
+                            Price = 60.0m,
+                            Type = TradeType.Buy
+                        }
+                    },
+                },
+                53.3m, // expectedVolumeWeightedStockPrice
+                0.33m // expectedPrecision
+            }
+        };
 
     #endregion CalculateVolumeWeightedStockPrice() tests
 }

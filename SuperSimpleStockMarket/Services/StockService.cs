@@ -48,7 +48,7 @@ public class StockService : IStockService
     /// <param name="stock"></param>
     /// <param name="tradeInterval">Trade interval. Default value is 5 minutes</param>
     /// <returns></returns>
-    public Decimal CalculateVolumeWeightedStockPrice(ref Stock stock, Int32 tradeIntervalMinutes = 5)
+    public Decimal CalculateVolumeWeightedStockPrice(ref Stock stock, UInt16 tradeIntervalMinutes = 5)
     {
         Throw.IfNull(nameof(stock), stock);
 
@@ -59,8 +59,8 @@ public class StockService : IStockService
             throw new InvalidOperationException(errMsg);
         }
 
-        var tradeIntervalStart = DateTime.Now;
-        var tradeIntervalEnd = tradeIntervalStart.AddMinutes(tradeIntervalMinutes);
+        var tradeIntervalEnd = DateTime.Now;
+        var tradeIntervalStart = tradeIntervalEnd.AddMinutes(-tradeIntervalMinutes);
         var tradesInTheInterval = stock.Trades
             .Where(kvp => kvp.Key >= tradeIntervalStart && kvp.Key <= tradeIntervalEnd)
             .Select(kvp => kvp.Value)
@@ -75,14 +75,15 @@ public class StockService : IStockService
         }
         catch (DivideByZeroException ex)
         {
-            _logger.LogError(ex, "Stock '{Symbol}': one of the trades has Quantity equal to zero",
-                stock.Symbol);
-            throw;
+            var errMsg = $"Stock '{stock.Symbol}': one of the trades has Quantity equal to zero";
+            _logger.LogError(ex, errMsg);
+            throw new DivideByZeroException(errMsg, ex);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Unexpected error occurred");
-            throw;
+            var errMsg = "Unexpected error occurred";
+            _logger.LogError(ex, errMsg);
+            throw new Exception(errMsg, ex);
         }
     }
 
