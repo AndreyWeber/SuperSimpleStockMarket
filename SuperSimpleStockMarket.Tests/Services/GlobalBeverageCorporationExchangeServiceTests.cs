@@ -130,39 +130,39 @@ public class GlobalBeverageCorporationExchangeServiceTests
     #region TryAddStock() tests
 
     [Fact]
-    public void TryAddStock_NullExchange_Throws_ArgumentNullException()
+    public async Task TryAddStock_NullExchange_Throws_ArgumentNullException()
     {
         // Arrange
         GlobalBeverageCorporationExchange exchange = null!;
         var stock = new Stock { Symbol = "A", VolumeWeightedPrice = 100.0m };
 
         // Act
-        var action = () => _stockService.TryAddStock(ref exchange, stock);
+        var action = async () => await _stockService.TryAddStockAsync(exchange, stock);
 
         // Assert
-        action.Should()
-            .Throw<ArgumentNullException>()
+        await action.Should()
+            .ThrowAsync<ArgumentNullException>()
             .WithMessage("*Argument cannot be null*");
     }
 
     [Fact]
-    public void TryAddStock_NullStock_Throws_ArgumentNullException()
+    public async Task TryAddStock_NullStock_Throws_ArgumentNullException()
     {
         // Arrange
         var exchange = new GlobalBeverageCorporationExchange { Stocks = new Dictionary<string, Stock>() };
         Stock stock = null!;
 
         // Act
-        var action = () => _stockService.TryAddStock(ref exchange, stock);
+        var action = async () => await _stockService.TryAddStockAsync(exchange, stock);
 
         // Assert
-        action.Should()
-            .Throw<ArgumentNullException>()
+        await action.Should()
+            .ThrowAsync<ArgumentNullException>()
             .WithMessage("*Argument cannot be null*");
     }
 
     [Fact]
-    public void TryAddStock_InvalidStock_FalseAndNotAdded()
+    public async Task TryAddStock_InvalidStock_FalseAndNotAdded()
     {
         // Arrange
         var exchange = new GlobalBeverageCorporationExchange
@@ -173,7 +173,7 @@ public class GlobalBeverageCorporationExchangeServiceTests
         const Int32 expectedNumberOfStocks = 0;
 
         // Act
-        var actualResult = _stockService.TryAddStock(ref exchange, stock);
+        var actualResult = await _stockService.TryAddStockAsync(exchange, stock);
 
         // Assert
         actualResult.Should().BeFalse();
@@ -183,7 +183,7 @@ public class GlobalBeverageCorporationExchangeServiceTests
     [Theory]
     [InlineData("A", 100.0)]
     [InlineData("B", 200.0)]
-    public void TryAddStock_ValidStock_TrueAndAdded(string symbol, Decimal volumeWeightedPrice)
+    public async Task TryAddStock_ValidStock_TrueAndAdded(string symbol, Decimal volumeWeightedPrice)
     {
         // Arrange
         var exchange = new GlobalBeverageCorporationExchange
@@ -194,7 +194,7 @@ public class GlobalBeverageCorporationExchangeServiceTests
         const Int32 expectedNUmberOfStocks = 1;
 
         // Act
-        var actualResult = _stockService.TryAddStock(ref exchange, stock);
+        var actualResult = await _stockService.TryAddStockAsync(exchange, stock);
 
         // Assert
         actualResult.Should().BeTrue();
@@ -203,7 +203,7 @@ public class GlobalBeverageCorporationExchangeServiceTests
     }
 
     [Fact]
-    public void TryAddStock_DuplicateStock_FalseAndNotAdded()
+    public async Task TryAddStock_DuplicateStock_FalseAndNotAdded()
     {
         // Arrange
         var stock = new Stock { Symbol = "A", VolumeWeightedPrice = 100.0m };
@@ -218,7 +218,7 @@ public class GlobalBeverageCorporationExchangeServiceTests
         const Int32 expectedNUmberOfStocks = 1;
 
         // Act
-        var actualResult = _stockService.TryAddStock(ref exchange, duplicateStock);
+        var actualResult = await _stockService.TryAddStockAsync(exchange, duplicateStock);
 
         // Assert
         actualResult.Should().BeFalse();

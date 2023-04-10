@@ -12,6 +12,8 @@ namespace SuperSimpleStockMarket.Services;
 /// </summary>
 public class GlobalBeverageCorporationExchangeService : IGlobalBeverageCorporationExchangeService
 {
+    private static readonly SemaphoreSlim? Semaphore = new (1, 1);
+
     private readonly ILogger<GlobalBeverageCorporationExchangeService> _logger;
 
     public GlobalBeverageCorporationExchangeService(
@@ -71,7 +73,8 @@ public class GlobalBeverageCorporationExchangeService : IGlobalBeverageCorporati
     }
 
     /// <summary>
-    /// Try to add Stock into GBCE Stocks collection
+    /// Try to add Stock into GBCE Stocks collection.
+    /// Method is thread safe
     /// </summary>
     /// <param name="exchange">GBCE</param>
     /// <param name="stock">Stock to add</param>
@@ -80,20 +83,33 @@ public class GlobalBeverageCorporationExchangeService : IGlobalBeverageCorporati
     /// be added if Stock Symbol is null or empty string or if Stock with the
     /// same Symbol already exists
     /// </returns>
-    public Boolean TryAddStock(ref GlobalBeverageCorporationExchange exchange, Stock stock)
+    public async Task<Boolean> TryAddStockAsync(GlobalBeverageCorporationExchange exchange, Stock stock)
     {
         Throw.IfNull(nameof(exchange), exchange);
         Throw.IfNull(nameof(stock), stock);
-
-        if (String.IsNullOrWhiteSpace(stock.Symbol))
+        try
         {
-            _logger.LogWarning("Stock wasn't added to Exchange stocks collection. Stock.Symbol is null or empty");
+            await Semaphore!.WaitAsync();
+
+            if (String.IsNullOrWhiteSpace(stock.Symbol))
+            {
+                _logger.LogWarning("Stock wasn't added to GBCE stocks collection. Stock.Symbol is null or empty");
+                return false;
+            }
+
+            exchange.Stocks ??= new Dictionary<String, Stock>();
+
+            return exchange.Stocks.TryAdd(stock.Symbol, stock);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to add new Stock '{Symbol}' to GBCE", stock.Symbol);
             return false;
         }
-
-        exchange.Stocks ??= new Dictionary<String, Stock>();
-
-        return exchange.Stocks.TryAdd(stock.Symbol, stock);
+        finally
+        {
+            Semaphore?.Release();
+        }
     }
 
     /// <summary>

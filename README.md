@@ -57,7 +57,7 @@
 
 ## Implementation
 ### Summary
-1. Solution implemented using C# .NET Core 7.0
+1. Solution implemented using C# 9.0, .NET Core 7.0
 2. Unit test framework: xUnit 2.4.2, Moq 4.18.4, FluentAssertions 6.10.0
 3. IDE: Visual Studio Code v1.77.1
 4. Code documented with XML for C# documentation comments

@@ -10,7 +10,8 @@ namespace SuperSimpleStockMarket.Services.Interfaces;
 public interface IGlobalBeverageCorporationExchangeService
 {
     /// <summary>
-    /// Try to add Stock into GBCE Stocks collection
+    /// Try to add Stock into GBCE Stocks collection.
+    /// Method is thread safe
     /// </summary>
     /// <param name="exchange">GBCE</param>
     /// <param name="stock">Stock to add</param>
@@ -19,7 +20,7 @@ public interface IGlobalBeverageCorporationExchangeService
     /// be added if Stock Symbol is null or empty string or if Stock with the
     /// same Symbol already exists
     /// </returns>
-    Boolean TryAddStock(ref GlobalBeverageCorporationExchange exchange, Stock stock);
+    Task<Boolean> TryAddStockAsync(GlobalBeverageCorporationExchange exchange, Stock stock);
     /// <summary>
     /// Calculate GBCE All Share Index using the geometric mean of the Volume
     /// Weighted Stock Price for all stocks

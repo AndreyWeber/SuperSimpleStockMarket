@@ -135,7 +135,7 @@ public class StockServiceTests
     #region TryAddTrade() tests
 
     [Fact]
-    public void TryAddTrade_ValidTrade_Success()
+    public async Task TryAddTrade_ValidTrade_Success()
     {
         // Arrange
         var stock = new Stock
@@ -154,7 +154,7 @@ public class StockServiceTests
         };
 
         // Act
-        var actualResult = _stockService.TryAddTrade(ref stock, trade);
+        var actualResult = await _stockService.TryAddTradeAsync(stock, trade);
 
         // Assert
         actualResult.Should().BeTrue();
@@ -166,7 +166,7 @@ public class StockServiceTests
     [Theory]
     [InlineData(null)]
     [InlineData("")]
-    public void TryAddTrade_InvalidTradeSymbol_Should_Failure(string tradeSymbol)
+    public async Task TryAddTrade_InvalidTradeSymbol_Should_Failure(string tradeSymbol)
     {
         // Arrange
         var stock = new Stock
@@ -185,7 +185,7 @@ public class StockServiceTests
         };
 
         // Act
-        var actualResult = _stockService.TryAddTrade(ref stock, trade);
+        var actualResult = await _stockService.TryAddTradeAsync(stock, trade);
 
         // Assert
         actualResult.Should().BeFalse();
@@ -193,7 +193,7 @@ public class StockServiceTests
     }
 
     [Fact]
-    public void TryAddTrade_NullStock_Throws_ArgumentNullException()
+    public async Task TryAddTrade_NullStock_Throws_ArgumentNullException()
     {
         // Arrange
         Stock stock = null!;
@@ -207,16 +207,16 @@ public class StockServiceTests
         };
 
         // Act
-        var action = () => _stockService.TryAddTrade(ref stock, trade);
+        var action = async () => await _stockService.TryAddTradeAsync(stock, trade);
 
         // Action
-        action.Should()
-            .Throw<ArgumentNullException>()
+        await action.Should()
+            .ThrowAsync<ArgumentNullException>()
             .WithMessage("*Argument cannot be null*");
     }
 
     [Fact]
-    public void TryAddTrade_NullTrade_Throws_ArgumentNullException()
+    public async Task TryAddTrade_NullTrade_Throws_ArgumentNullException()
     {
         // Arrange
         var stock = new Stock
@@ -228,11 +228,11 @@ public class StockServiceTests
         Trade trade = null!;
 
         // Act
-        var action = () => _stockService.TryAddTrade(ref stock, trade);
+        var action = async () => await _stockService.TryAddTradeAsync(stock, trade);
 
         // Assert
-        action.Should()
-            .Throw<ArgumentNullException>()
+        await action.Should()
+            .ThrowAsync<ArgumentNullException>()
             .WithMessage("*Argument cannot be null*");
     }
 
