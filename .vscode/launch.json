@@ -10,9 +10,9 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/SuperSimpleStockMarket.Console/bin/Debug/net7.0/SuperSimpleStockMarket.Console.dll",
+            "program": "${workspaceFolder}/SuperSimpleStockMarket.Api/bin/Debug/net7.0/SuperSimpleStockMarket.Api.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/SuperSimpleStockMarket.Console",
+            "cwd": "${workspaceFolder}/SuperSimpleStockMarket.Api",
             // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console
             "console": "externalTerminal",
             "stopAtEntry": false
