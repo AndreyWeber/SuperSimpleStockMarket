@@ -5,7 +5,12 @@ using DecimalMath;
 
 namespace SuperSimpleStockMarket.Services;
 
-public class GlobalBeverageCorporationExchangeService : IGlobalBeverageCorporationExchangeServiceService
+/// <summary>
+/// Global Beverage Corporation Exchange (GBCE) Service represents
+/// set of operations that can be carried out on Stocks traded
+/// on GBCE
+/// </summary>
+public class GlobalBeverageCorporationExchangeService : IGlobalBeverageCorporationExchangeService
 {
     private readonly ILogger<GlobalBeverageCorporationExchangeService> _logger;
 
@@ -15,6 +20,12 @@ public class GlobalBeverageCorporationExchangeService : IGlobalBeverageCorporati
         _logger = logger;
     }
 
+    /// <summary>
+    /// Calculate GBCE All Share Index using the geometric mean of the Volume
+    /// Weighted Stock Price for all stocks
+    /// </summary>
+    /// <param name="exchange">GBCE</param>
+    /// <returns>GBCE All Share Index value</returns>
     public Decimal CalculateAllShareIndex(GlobalBeverageCorporationExchange exchange)
     {
         Throw.IfNull(nameof(exchange), exchange);
@@ -59,6 +70,16 @@ public class GlobalBeverageCorporationExchangeService : IGlobalBeverageCorporati
         }
     }
 
+    /// <summary>
+    /// Try to add Stock into GBCE Stocks collection
+    /// </summary>
+    /// <param name="exchange">GBCE</param>
+    /// <param name="stock">Stock to add</param>
+    /// <returns>
+    /// 'true' if Stock was successfully added, 'false' otherwise. Stock won't
+    /// be added if Stock Symbol is null or empty string or if Stock with the
+    /// same Symbol already exists
+    /// </returns>
     public Boolean TryAddStock(ref GlobalBeverageCorporationExchange exchange, Stock stock)
     {
         Throw.IfNull(nameof(exchange), exchange);
@@ -75,6 +96,11 @@ public class GlobalBeverageCorporationExchangeService : IGlobalBeverageCorporati
         return exchange.Stocks.TryAdd(stock.Symbol, stock);
     }
 
+    /// <summary>
+    /// Calculate sum of Volume Weighted Price natural logarithms value
+    /// </summary>
+    /// <param name="stocks">Collection of Stocks</param>
+    /// <returns>Sum of Volume Weighted Price natural logarithms</returns>
     private static Decimal GetSumOfVolumeWeightedPriceLogarithms(IEnumerable<Stock> stocks) =>
         stocks.Aggregate(
             Decimal.Zero,

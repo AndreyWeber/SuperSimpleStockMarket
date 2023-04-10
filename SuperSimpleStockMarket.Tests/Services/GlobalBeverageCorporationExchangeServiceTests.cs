@@ -9,7 +9,7 @@ namespace SuperSimpleStockMarket.Tests.Services;
 
 public class GlobalBeverageCorporationExchangeServiceTests
 {
-    private readonly IGlobalBeverageCorporationExchangeServiceService _stockService;
+    private readonly IGlobalBeverageCorporationExchangeService _stockService;
     private readonly ILogger<GlobalBeverageCorporationExchangeService> _logger;
 
     public GlobalBeverageCorporationExchangeServiceTests()

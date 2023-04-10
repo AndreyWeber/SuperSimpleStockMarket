@@ -4,6 +4,10 @@ using SuperSimpleStockMarket.Common;
 
 namespace SuperSimpleStockMarket.Services;
 
+/// <summary>
+/// Stock Service represents set of operations that can
+/// be carried out on Stock that can be traded on GBCE
+/// </summary>
 public class StockService : IStockService
 {
     private readonly ILogger<StockService> _logger;
@@ -13,6 +17,12 @@ public class StockService : IStockService
         _logger = logger;
     }
 
+    /// <summary>
+    /// Calculate Stock Dividend Yield value
+    /// </summary>
+    /// <param name="stock">Stock</param>
+    /// <param name="price">Price value</param>
+    /// <returns>Calculated Stock Dividend Yield value</returns>
     public Decimal CalculateDividendYield(ref Stock stock, Decimal price)
     {
         Throw.IfNull(nameof(stock), stock);
@@ -29,6 +39,12 @@ public class StockService : IStockService
         return result;
     }
 
+    /// <summary>
+    /// Calculate Stock P/E Ratio value
+    /// </summary>
+    /// <param name="stock">Stock</param>
+    /// <param name="price">Price value</param>
+    /// <returns>Stock P/E Ratio value</returns>
     public Decimal CalculatePERatio(ref Stock stock, Decimal price)
     {
         Throw.IfNull(nameof(stock), stock);
@@ -43,11 +59,13 @@ public class StockService : IStockService
     }
 
     /// <summary>
-    ///
+    /// Calculate Volume Weighted Stock Price based on trades in past N minutes
     /// </summary>
-    /// <param name="stock"></param>
-    /// <param name="tradeInterval">Trade interval. Default value is 5 minutes</param>
-    /// <returns></returns>
+    /// <param name="stock">Stock</param>
+    /// <param name="tradeIntervalMinutes">
+    /// Past trade interval in minutes. Default interval is 5 minutes
+    /// </param>
+    /// <returns>Volume Weighted Stock Price value</returns>
     public Decimal CalculateVolumeWeightedStockPrice(ref Stock stock, UInt16 tradeIntervalMinutes = 5)
     {
         Throw.IfNull(nameof(stock), stock);
@@ -87,6 +105,16 @@ public class StockService : IStockService
         }
     }
 
+    /// <summary>
+    /// Try to add Trade into Stock trades collection
+    /// </summary>
+    /// <param name="stock">Stock</param>
+    /// <param name="trade">Trade</param>
+    /// <returns>
+    /// 'true' if Trade was successfully added, 'false' otherwise. Trade won't
+    /// be added if Trade Stock Symbol is null or empty or if Trade with the
+    /// same time stamp already exists
+    /// </returns>
     public Boolean TryAddTrade(ref Stock stock, Trade trade)
     {
         Throw.IfNull(nameof(stock), stock);
@@ -104,11 +132,24 @@ public class StockService : IStockService
         return stock.Trades.TryAdd(trade.TimeStamp, trade);
     }
 
+    /// <summary>
+    /// Get Stock Dividend Yield value for the Common stock type
+    /// </summary>
+    /// <param name="lastDividend">Stock Last Dividend value</param>
+    /// <param name="price">Price value</param>
+    /// <returns>Stock Dividend Yield value for the Common stock type</returns>
     private static Decimal GetCommonDividendYield(Decimal lastDividend, Decimal price) =>
         price.Equals(Decimal.Zero)
             ? Decimal.Zero
             : Decimal.Divide(lastDividend, price);
 
+    /// <summary>
+    /// Get Stock Dividend Yield value for the Preferred stock type
+    /// </summary>
+    /// <param name="fixedDividend">Stock Fixed Dividend value</param>
+    /// <param name="parValue">Stock Par Value</param>
+    /// <param name="price">Price value</param>
+    /// <returns></returns>
     private static Decimal GetPreferredDividendYield(Decimal? fixedDividend, Decimal parValue, Decimal price)
     {
         if (!fixedDividend.HasValue)
@@ -126,6 +167,11 @@ public class StockService : IStockService
         return result;
     }
 
+    /// <summary>
+    /// Get Volume Weighted Stock Price value
+    /// </summary>
+    /// <param name="trades">Stock Trades collection</param>
+    /// <returns>Volume Weighted Stock Price value</returns>
     private static Decimal GetVolumeWeightedStockPrice(IList<Trade> trades) =>
         trades.Any()
             ? Decimal.Divide(
