@@ -135,6 +135,13 @@ public class StockService : IStockService
                 return false;
             }
 
+            if (!stock.Symbol!.Equals(trade.Symbol))
+            {
+                _logger.LogWarning("Trade wasn't added to Stock '{StockSymbol}'. Trade.Symbol '{TradeSymbol}' is not equal to the Stock.Symbol",
+                    stock.Symbol, trade.Symbol);
+                return false;
+            }
+
             return stock.Trades.TryAdd(trade.TimeStamp, trade);
         }
         catch (Exception ex)

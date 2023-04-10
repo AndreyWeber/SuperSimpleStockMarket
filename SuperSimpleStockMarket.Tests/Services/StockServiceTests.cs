@@ -166,6 +166,7 @@ public class StockServiceTests
     [Theory]
     [InlineData(null)]
     [InlineData("")]
+    [InlineData("TEA")]
     public async Task TryAddTrade_InvalidTradeSymbol_Should_Failure(string tradeSymbol)
     {
         // Arrange

@@ -62,18 +62,14 @@ public class GlobalBeverageCorporationExchangeController : ControllerBase
         }
         catch (Exception ex)
         {
-            var errMsg = $"Failed to GBCE All Share Index";
+            var errMsg = $"Failed to get GBCE All Share Index";
             _logger.LogError(ex, errMsg);
             return StatusCode(500, $"{errMsg}. Error message: {ex.Message}");
         }
     }
 
-
     [HttpPost("Stocks/{symbol}/Trades/Add")]
-    public async Task<IActionResult> AddTrade(
-        [FromQuery] String symbol,
-        [FromBody] Trade trade
-    )
+    public async Task<IActionResult> AddTrade(String symbol, [FromBody] Trade trade)
     {
         if (String.IsNullOrWhiteSpace(symbol))
         {
@@ -104,6 +100,106 @@ public class GlobalBeverageCorporationExchangeController : ControllerBase
         catch (Exception ex)
         {
             var errMsg = $"Failed to add Trade to Stock '{symbol}'";
+            _logger.LogError(ex, errMsg);
+            return StatusCode(500, $"{errMsg}. Error message: {ex.Message}");
+        }
+    }
+
+    [HttpGet("Stocks/{symbol}/Price/{price:decimal}/DividendYield")]
+    public IActionResult GetStockDividendYield(String symbol, Decimal price)
+    {
+        if (String.IsNullOrWhiteSpace(symbol))
+        {
+            return BadRequest("Stock symbol is null or empty");
+        }
+
+        Stock stock;
+        try
+        {
+            var gbce = _gbceFactory.GetExchange();
+            if (!gbce.Stocks.TryGetValue(symbol, out stock!))
+            {
+                var errMsg = $"Stock '{symbol}' not found on GBCE";
+                _logger.LogError(errMsg);
+                return NotFound(errMsg);
+            }
+
+            var result = _stockService.CalculateDividendYield(ref stock, price);
+
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            var errMsg = $"Failed to get DividendYield for Stock '{symbol}'";
+            _logger.LogError(ex, errMsg);
+            return StatusCode(500, $"{errMsg}. Error message: {ex.Message}");
+        }
+    }
+
+    [HttpGet("Stocks/{symbol}/Price/{price:decimal}/PERatio")]
+    public IActionResult GetStockPERatio(String symbol,Decimal price)
+    {
+        if (String.IsNullOrWhiteSpace(symbol))
+        {
+            return BadRequest("Stock symbol is null or empty");
+        }
+
+        Stock stock;
+        try
+        {
+            var gbce = _gbceFactory.GetExchange();
+            if (!gbce.Stocks.TryGetValue(symbol, out stock!))
+            {
+                var errMsg = $"Stock '{symbol}' not found on GBCE";
+                _logger.LogError(errMsg);
+                return NotFound(errMsg);
+            }
+
+            var result = _stockService.CalculatePERatio(ref stock, price);
+
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            var errMsg = $"Failed to get PERatio for Stock '{symbol}'";
+            _logger.LogError(ex, errMsg);
+            return StatusCode(500, $"{errMsg}. Error message: {ex.Message}");
+        }
+    }
+
+    [HttpGet("Stocks/{symbol}/VolumeWeightedStockPrice")]
+    [HttpGet("Stocks/{symbol}/TradeIntervalMinutes/{tradeIntervalMinutes:int}/VolumeWeightedStockPrice")]
+    public IActionResult GetVolumeWeightedStockPrice(String symbol, Int32 tradeIntervalMinutes = 5)
+    {
+        if (String.IsNullOrWhiteSpace(symbol))
+        {
+            return BadRequest("Stock symbol is null or empty");
+        }
+
+        if (tradeIntervalMinutes <= 0)
+        {
+            return BadRequest("TradeIntervalMinutes have to be greater than zero");
+        }
+
+        Stock stock;
+        try
+        {
+            var gbce = _gbceFactory.GetExchange();
+            if (!gbce.Stocks.TryGetValue(symbol, out stock!))
+            {
+                var errMsg = $"Stock '{symbol}' not found on GBCE";
+                _logger.LogError(errMsg);
+                return NotFound(errMsg);
+            }
+
+            var result = _stockService
+                .CalculateVolumeWeightedStockPrice(ref stock, (UInt16)tradeIntervalMinutes);
+
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            var errMsg = $"Failed to get VolumeWeightedStockPrice for Stock '{symbol}'";
             _logger.LogError(ex, errMsg);
             return StatusCode(500, $"{errMsg}. Error message: {ex.Message}");
         }
