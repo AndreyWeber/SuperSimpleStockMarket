@@ -57,15 +57,26 @@
 
 ## Implementation
 ### Summary
-1. Solution implemented using C# .NET Core 7.0
+1. Solution implemented using C# 9.0, .NET Core 7.0
 2. Unit test framework: xUnit 2.4.2, Moq 4.18.4, FluentAssertions 6.10.0
 3. IDE: Visual Studio Code v1.77.1
 4. Code documented with XML for C# documentation comments
 ### Solution Structure
 - __SuperSimpleStockMarket__ - a library containing the implementation of all requirements listed above. This library is ready to be used as a part of a core object model or registered in a DI container as part of a RESTful Web API.
-- __SuperSimpleStockMarket.Tests__ - Unit tests demonstrating that the __SuperSimpleStockMarket__ library meets the requirements.
+- __SuperSimpleStockMarket.Api__ - sample Web API demostrating __SuperSimpleStockMarket__ usage.
+- __SuperSimpleStockMarket.Tests__ - unit tests demonstrating that the __SuperSimpleStockMarket__ library meets the requirements.
+### How To Run SuperSimpleStockMarket.Api
+Open Visual Studio Code and run API:
+   - Press F5
+   - From the top menu: _Run_ -> _Start Debugging_
+   - From the side menu: press _Run and Debug_ button -> select _.NET Core Launch (Web API)_ from a drop-down list on top -> press Play button
+
+#### Web API
+- URL: http://localhost:5177
+- API documentation will be accessible via SwaggerUI on http://localhost:5177/api/docs/index.html. SwaggerUI can be used to test API methods
+- [Postman](https://www.postman.com/) [collection](https://github.com/AndreyWeber/SuperSimpleStockMarket/blob/develop/SuperSimpleStockMarket.postman_collection.json) also can be used to tests API methods
 ### How To Run Unit Tests
-1. Open the solution folder in Visual Studio Code and run the following Tasks:
+1. Open the solution folder in Visual Studio Code and run the following Tasks using the top menu:
    - _Terminal_ -> _Run Task..._ -> _build_
    - _Terminal_ -> _Run Task..._ -> _test_
 2. Alternatively, unit tests can be executed using the `dotnet` CLI:

@@ -32,7 +32,8 @@ public interface IStockService
     /// <returns>Volume Weighted Stock Price value</returns>
     Decimal CalculateVolumeWeightedStockPrice(ref Stock stock, UInt16 tradeIntervalMinutes = 5);
     /// <summary>
-    /// Try to add Trade into Stock trades collection
+    /// Try to add Trade into Stock trades collection.
+    /// Method is thread safe
     /// </summary>
     /// <param name="stock">Stock</param>
     /// <param name="trade">Trade</param>
@@ -41,5 +42,5 @@ public interface IStockService
     /// be added if Trade Stock Symbol is null or empty or if Trade with the
     /// same time stamp already exists
     /// </returns>
-    Boolean TryAddTrade(ref Stock stock, Trade trade);
+    Task<Boolean> TryAddTradeAsync(Stock stock, Trade trade);
 }

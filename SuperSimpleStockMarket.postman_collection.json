@@ -1,0 +1,168 @@
+{
+	"info": {
+		"_postman_id": "99824d58-66f0-420d-b8ea-76317c5aef2a",
+		"name": "SuperSimpleStockMarket",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "26828122"
+	},
+	"item": [
+		{
+			"name": "Add Stock to GBCE",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"Symbol\": \"TEA\",\r\n    \"Type\": \"Common\",\r\n    \"LastDividend\": 0.0,\r\n    \"FixedDividend\": null,\r\n    \"ParValue\": 100,\r\n    \"DividendYield\": 0.0,\r\n    \"PERatio\": 0.0,\r\n    \"VolumeWeightedPrice\": 10.0,\r\n    \"Trades\": {}\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5177/api/GlobalBeverageCorporationExchange/Stocks/Add",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5177",
+					"path": [
+						"api",
+						"GlobalBeverageCorporationExchange",
+						"Stocks",
+						"Add"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add Trade to Stock",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"Symbol\": \"TEA\",\r\n    \"TimeStamp\": \"2023-04-05 10:00:00\",\r\n    \"Quantity\": 2,\r\n    \"Price\": 50.0,\r\n    \"Type\": \"Sell\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5177/api/GlobalBeverageCorporationExchange/Stocks/TEA/Trades/Add",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5177",
+					"path": [
+						"api",
+						"GlobalBeverageCorporationExchange",
+						"Stocks",
+						"TEA",
+						"Trades",
+						"Add"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get GBCE AllShareIndex",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5177/api/GlobalBeverageCorporationExchange/AllShareIndex",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5177",
+					"path": [
+						"api",
+						"GlobalBeverageCorporationExchange",
+						"AllShareIndex"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Stock DividendYield",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5177/api/GlobalBeverageCorporationExchange/Stocks/TEA/Price/100/DividendYield",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5177",
+					"path": [
+						"api",
+						"GlobalBeverageCorporationExchange",
+						"Stocks",
+						"TEA",
+						"Price",
+						"100",
+						"DividendYield"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Stock PERAtio",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5177/api/GlobalBeverageCorporationExchange/Stocks/TEA/Price/200/PERatio",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5177",
+					"path": [
+						"api",
+						"GlobalBeverageCorporationExchange",
+						"Stocks",
+						"TEA",
+						"Price",
+						"200",
+						"PERatio"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get StockVolumeWeightedStockPrice for 5min",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5177/api/GlobalBeverageCorporationExchange/Stocks/TEA/VolumeWeightedStockPrice",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5177",
+					"path": [
+						"api",
+						"GlobalBeverageCorporationExchange",
+						"Stocks",
+						"TEA",
+						"VolumeWeightedStockPrice"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

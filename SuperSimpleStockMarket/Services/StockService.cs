@@ -10,6 +10,8 @@ namespace SuperSimpleStockMarket.Services;
 /// </summary>
 public class StockService : IStockService
 {
+    private static readonly SemaphoreSlim? Semaphore = new (1, 1);
+
     private readonly ILogger<StockService> _logger;
 
     public StockService(ILogger<StockService> logger)
@@ -106,7 +108,8 @@ public class StockService : IStockService
     }
 
     /// <summary>
-    /// Try to add Trade into Stock trades collection
+    /// Try to add Trade into Stock trades collection.
+    /// Method is thread safe
     /// </summary>
     /// <param name="stock">Stock</param>
     /// <param name="trade">Trade</param>
@@ -115,21 +118,41 @@ public class StockService : IStockService
     /// be added if Trade Stock Symbol is null or empty or if Trade with the
     /// same time stamp already exists
     /// </returns>
-    public Boolean TryAddTrade(ref Stock stock, Trade trade)
+    public async Task<Boolean> TryAddTradeAsync(Stock stock, Trade trade)
     {
         Throw.IfNull(nameof(stock), stock);
         Throw.IfNull(nameof(trade), trade);
-
-        stock.Trades ??= new Dictionary<DateTime, Trade>();
-
-        if (String.IsNullOrWhiteSpace(trade.Symbol))
+        try
         {
-            _logger.LogWarning("Trade wasn't added to Stock '{Symbol}'. Trade.Symbol is null or empty",
-                stock.Symbol);
+            await Semaphore!.WaitAsync();
+
+            stock.Trades ??= new Dictionary<DateTime, Trade>();
+
+            if (String.IsNullOrWhiteSpace(trade.Symbol))
+            {
+                _logger.LogWarning("Trade wasn't added to Stock '{Symbol}'. Trade.Symbol is null or empty",
+                    stock.Symbol);
+                return false;
+            }
+
+            if (!stock.Symbol!.Equals(trade.Symbol))
+            {
+                _logger.LogWarning("Trade wasn't added to Stock '{StockSymbol}'. Trade.Symbol '{TradeSymbol}' is not equal to the Stock.Symbol",
+                    stock.Symbol, trade.Symbol);
+                return false;
+            }
+
+            return stock.Trades.TryAdd(trade.TimeStamp, trade);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to add new Trade to Stock '{Symbol}'", stock.Symbol);
             return false;
         }
-
-        return stock.Trades.TryAdd(trade.TimeStamp, trade);
+        finally
+        {
+            Semaphore?.Release();
+        }
     }
 
     /// <summary>
