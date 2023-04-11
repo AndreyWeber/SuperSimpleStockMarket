@@ -83,5 +83,3 @@ Open Visual Studio Code and run API:
    - Open a terminal window
    - Navigate to the __SuperSimpleStockMarket.Tests__ folder
    - Run the following command from the command line: `dotnet test`
-### Note
-As stated in the requirements, there is no application or I/O for running the __SuperSimpleStockMarket__ functionality, except for the unit tests.
