@@ -62,15 +62,14 @@
 3. IDE: Visual Studio Code v1.77.1
 4. Code documented with XML for C# documentation comments
 ### Solution Structure
-- __SuperSimpleStockMarket__ - a library containing the implementation of all requirements listed above. This library is ready to be used as a part of a core object model or registered in a DI container as part of a RESTful Web API.
+- __SuperSimpleStockMarket__ - a library containing the implementation of all requirements listed above. This library is designed to be used as part of a core object model or registered in a DI container as a component of a RESTful Web API. All data models are implemented as plain data classes, ready for JSON serialization, and are decoupled from services that encapsulate model behavior and data processing. This ensures flexibility and maintainability.
 - __SuperSimpleStockMarket.Api__ - sample Web API demostrating __SuperSimpleStockMarket__ usage.
 - __SuperSimpleStockMarket.Tests__ - unit tests demonstrating that the __SuperSimpleStockMarket__ library meets the requirements.
 ### How To Run SuperSimpleStockMarket.Api
-Open Visual Studio Code and run API:
+Open Visual Studio Code and choose one of the following options to run the API in debug mode:
    - Press F5
    - From the top menu: _Run_ -> _Start Debugging_
    - From the side menu: press _Run and Debug_ button -> select _.NET Core Launch (Web API)_ from a drop-down list on top -> press Play button
-
 #### Web API
 - URL: http://localhost:5177
 - API documentation will be accessible via SwaggerUI on http://localhost:5177/api/docs/index.html. SwaggerUI can be used to test API methods
